@@ -52,8 +52,9 @@ workflow.add_edge('tools', 'agent')
 # Compile the graph into a LangChain Runnable
 chain = workflow.compile()
 
-while True:
-    query = input("Ask anything about Magic:the Gathering cards! ")  # "What is the price of Delver of Secrets?"
-    result = chain.invoke({"input": query, "intermediate_steps": []})
-    output = result['agent_outcome'].return_values["output"]
-    print(output)
+if __name__ == "__main__":
+    while True:
+        query = input("Ask anything about Magic:the Gathering cards! ")  # "What is the price of Delver of Secrets?"
+        result = chain.invoke({"input": query, "intermediate_steps": []})
+        output = result['agent_outcome'].return_values["output"]
+        print(output)

@@ -17,21 +17,28 @@ def detect_card_name(query: str) -> str:
         HumanMessage(content=query)
     ]
     attribute = [
-        SystemMessage(content=f"You extract the attribute to extract from the query. An attribute might be: price, ability, text, power, etc..."),
+        SystemMessage(
+            content=f"You extract the attribute to extract from the query. An attribute might be: price, ability, text, power, etc..."),
         HumanMessage(content=query)
     ]
     return llm.invoke(card_name).content, llm.invoke(attribute).content
 
 
 @tool
-def latest_price(card_name: str, attribute: str) -> str:
+def card_data(card_name: str, attribute: str) -> str:
     """
-    Provides the attribute for a given Magic: the Gathering card.
+    Provides the information for a given Magic: the Gathering card.
     Uses the Scryfall to retrieve information.
     """
     cards = requests.get(f"https://api.scryfall.com/cards/named?fuzzy={card_name}").json()
-    price = cards[attribute]
-    return price
+    llm = ChatOpenAI(model="gpt-4")
+    card_attribute = [
+        SystemMessage(
+            content=f"Associate ATTRIBUTE to the best matching word from a list of KEYS. Return the selected word from KEYS."),
+        HumanMessage(content=f"ATTRIBUTE: {attribute} KEYS: {cards.keys()} ")
+    ]
+    attribute = llm.invoke(card_attribute).content.replace("'", "")
+    return cards[attribute]
 
 
-tools = [detect_card_name, latest_price]
+tools = [detect_card_name, card_data]

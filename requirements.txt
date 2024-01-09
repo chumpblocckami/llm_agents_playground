@@ -5,3 +5,4 @@ langchainhub
 requests
 
 python-dotenv
+streamlit
